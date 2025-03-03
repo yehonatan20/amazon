@@ -1,9 +1,12 @@
 import express from "express";
 import dotenv from 'dotenv';
 import cors from "cors";
-import http from 'http';
 import seedRouter from "./routers/seedRouter.js";
+import productRouter from "./routers/productRouter.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import notFoundHandler from "./middleware/notFoundHandler.js";
+import runServer from "./middleware/runServer.js";
+import userRouter from "./routers/userRouter.js";
 
 
 dotenv.config();
@@ -17,17 +20,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1/seed', seedRouter);
+app.use('/api/v1/product', productRouter);
+app.use('/api/v1/users', userRouter);
 
 app.use(errorHandler);
-// app.use(notFoundHandler);
+app.use(notFoundHandler);
 
-const server = http.createServer(app);
-
-const start = () => {
-    server.listen(PORT, () => {
-        console.log(process.env.PORT);
-        console.log(`Server is listening on port ${PORT}`);
-    })
-};
-
-start();
+runServer(app, process.env.MONGO_CONN, PORT);
